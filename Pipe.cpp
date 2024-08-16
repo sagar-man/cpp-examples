@@ -15,6 +15,7 @@ int main()
     if(pipe(pipe_fds) == -1)
     {
         std::cerr <<"Pipe creation failed\n";
+        return 1;
     }
 
     // Fork the process
@@ -23,6 +24,7 @@ int main()
     if(pid < 0) 
     {
         std::cerr <<"fork() failed\n";
+        return 1;
     }
 
     if(pid > 0) // parent process
