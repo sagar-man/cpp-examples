@@ -2,6 +2,7 @@
 #include <string>
 #include <chrono>
 #include <thread>
+#include <mutex>
 
 class Singleton
 {
@@ -9,12 +10,13 @@ class Singleton
 protected:
     Singleton(const std::string _value) : value_(_value) { }
     static Singleton* instance_;
+    static std::mutex mu_;
     std::string value_;
     
 public:
     // not copiybale
     Singleton(const Singleton&) = delete;
-    // not asignable
+    // not assignable
     void operator = (const Singleton&) = delete;
 
     static Singleton* getInstance(const std::string& _value);
@@ -29,6 +31,7 @@ Singleton* Singleton::instance_ = nullptr;
 
 Singleton* Singleton::getInstance(const std::string& _value)
 {
+    std::lock_guard<std::mutex> lock(mu_);
     if(instance_ == nullptr)
     {
         instance_ = new Singleton(_value);
@@ -44,7 +47,7 @@ void ThreadFoo()
     std::cout << instance->getValue() <<" \n";
 
     Singleton* instance2 = Singleton::getInstance("BAR");
-    std::cout << instance2->getValue() <<" \n";
+    std::cout << instance2->getValue() <<" \n"; // FOO
 }
 
 int main()
